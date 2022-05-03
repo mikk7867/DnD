@@ -10,31 +10,47 @@ namespace DnD
     {
         public void Start()
         {
-            Stats();
-            Class();
+            //user rolls stats
+            AbilityScore abilityScore = Stats();
+            //user picks class
+            string charclass = Class();
+            //user picks a name
+            string name = "Placeholder";
+            Character character = new(name, abilityScore, charclass);
         }
-        public void Stats()
+        public AbilityScore Stats()
         {
             int[] stats;
             Console.WriteLine("Please choose how to allocate stats:\n" +
                 "'1' for rolling 4d6 - omit lowest\n" +
                 "'2' for standart array");
-            switch (Console.ReadKey().KeyChar)
+            do
             {
-                case '1':
-                    stats = StatRoller();
-                    break;
-                case '2':
-                    stats = new int[] { 15, 14, 13, 12, 10, 8 };
-                    break;
-                default:
-                    stats = new int[] { 15, 14, 13, 12, 10, 8 };
-                    break;
-            }
+                switch (Console.ReadKey().KeyChar)
+                {
+                    case '1':
+                        //program rolls stats
+                        stats = StatRoller();
+                        break;
+                    case '2':
+                        //program delivers base array
+                        stats = new int[] { 15, 14, 13, 12, 10, 8 };
+                        break;
+                    default://midlertidig
+                        break;
+                }
+            } while (stats[0] == null);
+            
             foreach (int i in stats)
             {
                 Console.Write($"{i} ");
             }
+            //assign scores to each attribute
+            int[] stats2 = new int[6];
+            //fordeling af stats
+
+            //returnering af stats, nu fordelt
+            return new(stats2[0], stats2[1], stats2[2], stats2[3], stats2[4], stats2[5]);
         }
         public int[] StatRoller()
         {
@@ -55,9 +71,11 @@ namespace DnD
             Array.Reverse(stats);
             return stats;
         }
-        public void Class()
+        public string Class()
         {
+            Console.WriteLine("Choose a class");
 
+            return "";
         }
     }
 }
