@@ -16,7 +16,7 @@ namespace DnD
             string charclass = Class();
             //user picks a name
             string name = Naming();
-            Character character = new(name, abilityScore, charclass);
+            Character character = new(name, charclass, 1, abilityScore, 0);
             Console.WriteLine($"Name: {character.Name}\n" +
                 $"Class: {character.Classes}\n" +
                 $"Str: {character.Score.Strength}\n" +
@@ -25,6 +25,7 @@ namespace DnD
                 $"Int: {character.Score.Intelligence}\n" +
                 $"Wis: {character.Score.Wisdom}\n" +
                 $"Cha: {character.Score.Charisma}");
+            Append(character);
         }
         public AbilityScore Stats()
         {
@@ -85,7 +86,7 @@ namespace DnD
         public int[] StatRoller()
         {
             Random dice = new();
-            int[] stats = new int[6], 
+            int[] stats = new int[6],
                 rolls = new int[4];
             for (int i = 0; i < stats.Length; i++)
             {
@@ -105,28 +106,31 @@ namespace DnD
         {
             Console.WriteLine("Choose a class");
             Console.WriteLine("Please choose how to allocate stats:\n" +
-                "'1' => Fighter\n" +
-                "'2' => Rogue\n" +
-                "'3' => Barbarian\n" +
-                "'4' => Wizard\n" +
-                "'5' => Cleric\n" +
-                "'6' => Bard");
-            while(true)
+                "'1' => Barbarian\n" +
+                "'2' => Bard\n" +
+                "'3' => Cleric\n" +
+                "'4' => Fighter\n" +
+                "'5' => Paladin\n" +
+                "'6' => Rogue\n" +
+                "'7' => Wizard");
+            while (true)
             {
-                switch(Console.ReadKey().KeyChar)
+                switch (Console.ReadKey().KeyChar)
                 {
                     case '1':
-                        return "Fighter";
-                    case '2':
-                        return "Rogue";
-                    case '3':
                         return "Barbarian";
-                    case '4':
-                        return "Wizard";
-                    case '5':
-                        return "Cleric";
-                    case '6':
+                    case '2':
                         return "Bard";
+                    case '3':
+                        return "Cleric";
+                    case '4':
+                        return "Fighter";
+                    case '5':
+                        return "Paladin";
+                    case '6':
+                        return "Rogue";
+                    case '7':
+                        return "Wizard";
                     default:
                         Console.WriteLine("fejl");
                         break;
@@ -135,12 +139,12 @@ namespace DnD
         }
         public string Naming()
         {
-            string name;
+            string? name;
             Console.WriteLine("Write the name of your character:");
             while (true)
             {
                 name = Console.ReadLine();
-                if (name != null)
+                if (name != null && name.All(Char.IsLetter))
                 {
                     return name;
                 }
@@ -149,6 +153,99 @@ namespace DnD
                     Console.WriteLine("fejl");
                 }
             }
+        }
+        public void Append(Character c)
+        {
+            string s = $"{c.Name},{c.Classes},{c.Level}," +
+                $"{c.Score.Strength},{c.Score.Dexterity},{c.Score.Constitution}," +
+                $"{c.Score.Intelligence},{c.Score.Wisdom},{c.Score.Charisma},{c.XP},";
+            //Console.WriteLine(s); //test
+            File.AppendAllText("characters.txt", s);
+        }
+        public void View(List<Character> list)
+        {
+            foreach (Character c in list)
+            {
+                Console.WriteLine($"Name: {c.Name}\n" +
+                    $"Class: {c.Classes} lv {c.Level}\n" +
+                    $"Str: {c.Score.Strength}\n" +
+                    $"Dex: {c.Score.Dexterity}\n" +
+                    $"Con: {c.Score.Constitution}\n" +
+                    $"Int: {c.Score.Intelligence}\n" +
+                    $"Wis: {c.Score.Wisdom}\n" +
+                    $"Cha: {c.Score.Charisma}\n" +
+                    $"XP: {c.XP}\n\n");
+            }
+        }
+        public List<Character> Partytime()
+        {
+            List<Character> list = Reader(), party = new();
+            if (list.Count < 4)
+            {
+                return list;
+            }
+            int number;
+            char input;
+            while (true)
+            {
+                Console.Clear();
+                number = 1;
+                foreach (Character c in list)
+                {
+                    Console.WriteLine($"Character nr. {number}\n" +
+                        $"Name: {c.Name}\n" +
+                        $"Class: {c.Classes} lv {c.Level}\n" +
+                        $"Str: {c.Score.Strength}\n" +
+                        $"Dex: {c.Score.Dexterity}\n" +
+                        $"Con: {c.Score.Constitution}\n" +
+                        $"Int: {c.Score.Intelligence}\n" +
+                        $"Wis: {c.Score.Wisdom}\n" +
+                        $"Cha: {c.Score.Charisma}\n" +
+                        $"XP: {c.XP}");
+                    number++;
+                    if (party.Contains(c))
+                    {
+                        Console.WriteLine(" - In party -");
+                    }
+                    Console.WriteLine();
+                }
+                Console.WriteLine("Press character number to add them to party\n" +
+                    "Press '0' to confirm current party");
+                input = Console.ReadKey().KeyChar;
+                Console.WriteLine();
+                if (input == '0' && party.Count > 3)
+                {
+                    return party;
+                }
+                else if (char.IsDigit(input) && int.Parse(input.ToString()) < (list.Count + 1))
+                {
+                    party.Add(list[int.Parse(input.ToString()) - 1]);
+                }
+                else
+                {
+                    Console.WriteLine("fejl");
+                }
+            }
+        }
+        public List<Character> Reader()
+        {
+            string s = File.ReadAllText("characters.txt");
+            List<string> lines = s.Split(',').ToList();
+            List<int> stats = new();
+            List<Character> characters = new();
+            Character temp;
+            AbilityScore numbers;
+            for (int i = 0; i < (lines.Count / 10); i++)
+            {
+                for (int j = 0; j < 6; j++)
+                {
+                    stats.Add(int.Parse(lines[(i * 10) + j + 3]));
+                }
+                numbers = new(stats[0], stats[1], stats[2], stats[3], stats[4], stats[5]);
+                temp = new(lines[(i * 10)], lines[(i * 10)+1], int.Parse(lines[(i * 10)+2]), numbers, int.Parse(lines[(i * 10) + 9]));
+                characters.Add(temp);
+            }
+            return characters;
         }
     }
 }

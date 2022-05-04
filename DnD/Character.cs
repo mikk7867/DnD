@@ -9,14 +9,18 @@ namespace DnD
     internal class Character
     {
         public string Name { get; set; }
-        public AbilityScore Score { get; set; }   
-        public string Classes { get; set; }
         //public string Race { get; set; }
-        public Character(string name, AbilityScore score, string classes)
+        public string Classes { get; set; }
+        public int Level { get; set; }
+        public AbilityScore Score { get; set; }
+        public int XP { get; set; }
+        public Character(string name, string classes, int level, AbilityScore score, int xp)
         {
             Name = name;
-            Score = score;
             Classes = classes;
+            Level = level;
+            Score = score;
+            XP = xp;
         }
     }
     internal class AbilityScore

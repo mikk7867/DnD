@@ -8,5 +8,6 @@ namespace DnD
 {
     internal class Gameplay
     {
+        //to be added. maybe. at some point
     }
 }
