@@ -18,7 +18,6 @@ internal class Program
                 "'2' to view existing characters\n" +
                 "'3' to form a party\n" +
                 "'4' to view current party");
-
             //switch
             switch (Console.ReadKey().KeyChar)
             {
@@ -42,8 +41,8 @@ internal class Program
                     }
                     break;
                 default:
-                    Console.Clear();
                     Console.WriteLine("Wrong button, try again");
+                    Console.ReadKey();
                     break;
             }
         }

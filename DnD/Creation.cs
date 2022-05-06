@@ -40,7 +40,7 @@ namespace DnD
                 {
                     '1' => StatRoller(),//program rolls stats
                     '2' => new int[] { 15, 14, 13, 12, 10, 8 },//program delivers base array
-                    _ => new int[1]
+                    _ => new int[1]//for functionallity
                 };
             } while (stats.Length != 6);
             //assign scores to each attribute
@@ -174,8 +174,10 @@ namespace DnD
                     $"Int: {c.Score.Intelligence}\n" +
                     $"Wis: {c.Score.Wisdom}\n" +
                     $"Cha: {c.Score.Charisma}\n" +
-                    $"XP: {c.XP}\n\n");
+                    $"XP: {c.XP}\n");
             }
+            Console.WriteLine("Press any key to return to menu");
+            Console.ReadKey();
         }
         public List<Character> Partytime()
         {
@@ -184,42 +186,58 @@ namespace DnD
             {
                 return list;
             }
-            int number;
-            char input;
+            int number, page = 0;
+            string input;
+            Character c;
             while (true)
             {
                 Console.Clear();
                 number = 1;
-                foreach (Character c in list)
+                Console.WriteLine($"Page {page + 1}\n");
+                for (int i = 0; i < 3; i++)
                 {
-                    Console.WriteLine($"Character nr. {number}\n" +
-                        $"Name: {c.Name}\n" +
-                        $"Class: {c.Classes} lv {c.Level}\n" +
-                        $"Str: {c.Score.Strength}\n" +
-                        $"Dex: {c.Score.Dexterity}\n" +
-                        $"Con: {c.Score.Constitution}\n" +
-                        $"Int: {c.Score.Intelligence}\n" +
-                        $"Wis: {c.Score.Wisdom}\n" +
-                        $"Cha: {c.Score.Charisma}\n" +
-                        $"XP: {c.XP}");
-                    number++;
-                    if (party.Contains(c))
+                    if ((page * 3) + i < list.Count)
                     {
-                        Console.WriteLine(" - In party -");
+                        c = list[(page * 3) + i];
+                        Console.WriteLine($"Character nr. {number}\n" +
+                            $"Name: {c.Name}\n" +
+                            $"Class: {c.Classes} lv {c.Level}\n" +
+                            $"Str: {c.Score.Strength}\n" +
+                            $"Dex: {c.Score.Dexterity}\n" +
+                            $"Con: {c.Score.Constitution}\n" +
+                            $"Int: {c.Score.Intelligence}\n" +
+                            $"Wis: {c.Score.Wisdom}\n" +
+                            $"Cha: {c.Score.Charisma}\n" +
+                            $"XP: {c.XP}");
+                        number++;
+                        if (party.Contains(c))
+                        {
+                            Console.WriteLine(" - In party -");
+                        }
+                        Console.WriteLine();
                     }
-                    Console.WriteLine();
                 }
                 Console.WriteLine("Press character number to add them to party\n" +
-                    "Press '0' to confirm current party");
-                input = Console.ReadKey().KeyChar;
+                    "Press '0' to confirm current party\n" +
+                    "Press 'd' to go to next page\n" +
+                    "Press 'a' to go to previous page");
+                input = Console.ReadKey().KeyChar.ToString().ToLower();
                 Console.WriteLine();
-                if (input == '0' && party.Count > 3)
+                if (input == "0" && party.Count > 3)
                 {
                     return party;
                 }
-                else if (char.IsDigit(input) && int.Parse(input.ToString()) < (list.Count + 1))
+                else if (input == "d" && (page + 1) * 3 < list.Count)
                 {
-                    party.Add(list[int.Parse(input.ToString()) - 1]);
+                    page++;
+                }
+                else if (input == "a" && page > 0)
+                {
+                    page--;
+                }
+                else if (int.TryParse(input, out int i) && i < (list.Count + 1) && input != "0")
+                {
+                    party.Add(list[(page * 3) + i - 1]);
                 }
                 else
                 {
@@ -242,7 +260,7 @@ namespace DnD
                     stats.Add(int.Parse(lines[(i * 10) + j + 3]));
                 }
                 numbers = new(stats[0], stats[1], stats[2], stats[3], stats[4], stats[5]);
-                temp = new(lines[(i * 10)], lines[(i * 10)+1], int.Parse(lines[(i * 10)+2]), numbers, int.Parse(lines[(i * 10) + 9]));
+                temp = new(lines[(i * 10)], lines[(i * 10) + 1], int.Parse(lines[(i * 10) + 2]), numbers, int.Parse(lines[(i * 10) + 9]));
                 characters.Add(temp);
             }
             return characters;
