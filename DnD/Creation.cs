@@ -302,13 +302,15 @@ namespace DnD
             //text split by commas
             List<string> lines = s.Split(',').ToList();
             //other variables
-            List<int> stats = new();
+            List<int> stats;
             List<Character> characters = new();
             Character temp;
             AbilityScore numbers;
             //for each character (10 values per character, 10 * nr-of-values)
             for (int i = 0; i < (lines.Count / 10); i++)
             {
+                //resets the stats list
+                stats = new();
                 //for the ability scores, because they need to be added to the character as an abilityscore object
                 for (int j = 0; j < 6; j++)
                 {
